@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Wiki - Red Hat Linux</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header id="pageHeader">
+        <div class="logo-title">
+            <img src="/images/Redhat_logo.png" alt="Red Hat Logo" class="redhat-logo">
+            <h1>Red Hat Linux</h1>
+        </div>
+        <div class="header-actions">
+            <span id="userInfo" style="margin-right: 15px; display: none;">Welcome, <span id="usernameDisplay"></span> (<span id="userRoleDisplay"></span>)</span>
+            <!-- Corrected to ensure it's an anchor tag for navigation -->
+            <a href="/admin/users" id="manageUsersLink" class="header-button" style="display: none;">Manage Users</a>
+            <button id="logoutButton" class="header-button">Logout</button>
+        </div>
+        <div id="notificationBar" class="notification-bar" style="display: none;">
+            <span id="notificationMessage"></span>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <nav id="sidebar">
+            <h2>Library Structure</h2>
+            <ul id="pageList">
+                <!-- Tree will be populated here -->
+            </ul>
+            <div id="tree-controls">
+                 <button id="newRootChapterBtn" class="new-page-btn tree-control-btn" onclick="showNewItemDialog('.', 'file')">New Root Chapter</button>
+                 <button id="newRootSubjectBtn" class="new-folder-btn tree-control-btn" onclick="showNewItemDialog('.', 'directory')">New Root Subject</button>
+            </div>
+        </nav>
+
+        <main id="mainContent">
+            <div id="welcomeMessage" class="content-panel">
+                <h2>Welcome!</h2>
+                <p>Select a page from the sidebar to view its content, or create a new page/folder using the controls.</p>
+            </div>
+
+            <div id="viewArea" style="display:none;" class="content-panel">
+                <div class="view-header">
+                    <h2 id="viewPageTitle">Page Title</h2>
+                    <button id="editPageButton" class="action-button">Edit Page</button>
+                </div>
+                <p id="viewPageDescription" class="page-description">Page description.</p>
+                <hr>
+                <div id="viewPageContent" class="markdown-body"></div>
+            </div>
+
+            <div id="editorArea" style="display:none;" class="content-panel">
+                <h2>Edit Page</h2>
+                <input type="hidden" id="itemPathToUpdate">
+                <input type="hidden" id="itemParentPath">
+                <div><label for="pageTitleInput">Title:</label><input type="text" id="pageTitleInput" required></div>
+                <div><label for="pageDescriptionInput">Description (optional):</label><input type="text" id="pageDescriptionInput"></div>
+                <div><label for="pageContent">Content (Markdown):</label><textarea id="pageContent" rows="20"></textarea></div>
+                <button onclick="savePage()" class="action-button primary">Save Page</button>
+                <button onclick="cancelEdit()" class="action-button">Cancel</button>
+                 <div id="renderedPreview"><h3 >Preview</h3><div id="previewContent" class="markdown-body"></div></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="newItemModal" class="modal"><div class="modal-content">
+        <span class="close-button" onclick="closeModal('newItemModal')">×</span>
+        <h3 id="newItemModalTitle">Create New Item</h3>
+        <input type="hidden" id="newItemParentPathModal"><input type="hidden" id="newItemTypeModal">
+        <div><label for="newItemTitleInput">Title:</label><input type="text" id="newItemTitleInput" required></div>
+        <div><label for="newItemDescriptionInput">Description (optional):</label><input type="text" id="newItemDescriptionInput"></div>
+        <button onclick="handleCreateItem()" class="action-button primary">Create</button>
+    </div></div>
+
+    <div id="editItemModal" class="modal"><div class="modal-content">
+        <span class="close-button" onclick="closeModal('editItemModal')">×</span>
+        <h3 id="editItemModalTitle">Edit/Rename Item</h3>
+        <input type="hidden" id="editItemOldPathModal"><input type="hidden" id="editItemTypeModal">
+        <div><label for="editItemNewTitleInput">New Title:</label><input type="text" id="editItemNewTitleInput" required></div>
+        <div><label for="editItemNewDescriptionInput">New Description:</label><input type="text" id="editItemNewDescriptionInput"></div>
+        <div><label for="editItemNewParentPathInput">Parent Path:</label><input type="text" id="editItemNewParentPathInput" required></div>
+        <button onclick="handleRenameItem()" class="action-button primary">Save Changes</button>
+    </div></div>
+
+    <div id="moveItemModal" class="modal"><div class="modal-content">
+        <span class="close-button" onclick="closeModal('moveItemModal')">×</span>
+        <h3 id="moveItemModalTitle">Move Item</h3>
+        <input type="hidden" id="moveItemPathModal">
+        <input type="hidden" id="moveItemOriginalTitleModal">
+        <input type="hidden" id="moveItemOriginalDescriptionModal">
+        <div><label for="moveItemNewParentPathInput">New Parent Path (e.g., 'folderA' or '.' for root):</label>
+             <input type="text" id="moveItemNewParentPathInput" placeholder="Enter target folder path or '.' for root" required>
+        </div>
+        <button onclick="handleMoveItemConfirm()" class="action-button primary">Move Item</button>
+    </div></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/script.js"></script>
+</body>
+</html>

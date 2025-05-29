@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Red Hat Linux Wiki</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/users-style.css">
+</head>
+<body>
+    <header id="pageHeader">
+        <div class="logo-title">
+            <img src="/images/Redhat_logo.png" alt="Red Hat Logo" class="redhat-logo">
+            <h1>Red Hat Linux Wiki - User Management</h1>
+        </div>
+        <div class="header-actions">
+            <a href="/" class="header-button">Back to Wiki</a>
+            <button id="logoutButtonUsersPage" class="header-button">Logout</button>
+        </div>
+        <div id="notificationBar" class="notification-bar" style="display: none;">
+            <span id="notificationMessage"></span>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <main id="userManagementContent">
+            <div class="users-header">
+                <h2>Manage Users</h2>
+                <button id="addUserBtn" class="action-button primary">Add New User</button>
+            </div>
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- User rows will be populated here by JavaScript -->
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('addUserModal')">×</span>
+            <h3>Add New User</h3>
+            <form id="addUserForm">
+                <div><label for="addUsername">Username:</label><input type="text" id="addUsername" required></div>
+                <div><label for="addPassword">Password:</label><input type="password" id="addPassword" required minlength="6"></div>
+                <div>
+                    <label for="addRole">Role:</label>
+                    <select id="addRole" required>
+                        <option value="student">Student</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="addEnabled">Enabled:</label>
+                    <input type="checkbox" id="addEnabled" checked>
+                </div>
+                <button type="submit" class="action-button primary">Add User</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('editUserModal')">×</span>
+            <h3>Edit User: <span id="editUsernameDisplay"></span></h3>
+            <form id="editUserForm">
+                <input type="hidden" id="editUserId">
+                <div>
+                    <label for="editRole">Role:</label>
+                    <select id="editRole" required>
+                        <option value="student">Student</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="editEnabled">Enabled:</label>
+                    <input type="checkbox" id="editEnabled">
+                </div>
+                <button type="submit" class="action-button primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Reset Password Modal -->
+    <div id="resetPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('resetPasswordModal')">×</span>
+            <h3>Reset Password for <span id="resetPasswordUsernameDisplay"></span></h3>
+            <form id="resetPasswordForm">
+                <input type="hidden" id="resetPasswordUserId">
+                <div><label for="newPassword">New Password:</label><input type="password" id="newPassword" required minlength="6"></div>
+                <button type="submit" class="action-button primary">Reset Password</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/users-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+/* Inherits some styles from style.css for header, modals, buttons */
+
+body { 
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.admin-container {
+    flex-grow: 1;
+    padding-top: calc(var(--header-height) + 20px);
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#userManagementContent {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.users-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.users-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: var(--text-color);
+}
+
+#usersTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+#usersTable th, #usersTable td {
+    border: 1px solid var(--border-color);
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+#usersTable th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+
+#usersTable tr:nth-child(even) {
+    background-color: #fdfdfd;
+}
+
+#usersTable tr:hover {
+    background-color: var(--hover-bg-color);
+}
+
+#usersTable .actions-cell button {
+    background: none;
+    border: 1px solid transparent;
+    color: #007bff;
+    cursor: pointer;
+    padding: 4px 6px;
+    margin-right: 5px;
+    border-radius: 3px;
+    font-size: 0.85em;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+#usersTable .actions-cell button:hover {
+    background-color: #e9ecef;
+}
+#usersTable .actions-cell button.delete-btn {
+    color: var(--primary-color);
+}
+#usersTable .actions-cell button.delete-btn:hover {
+    background-color: rgba(204, 0, 0, 0.1);
+}
+
+#usersTable .status-enabled {
+    color: #28a745; 
+    font-weight: bold;
+}
+#usersTable .status-disabled {
+    color: #dc3545; 
+    font-weight: bold;
+}
+
+.modal-content { /* Already defined in style.css, this is for users.html if it needs override */
+    max-width: 500px; 
+}
+.modal-content label {
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+.modal-content input[type="text"],
+.modal-content input[type="password"],
+.modal-content select {
+    width: calc(100% - 22px); 
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+.modal-content input[type="checkbox"] {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+#addUserForm div, #editUserForm div, #resetPasswordForm div {
+    margin-bottom: 15px;
+}
