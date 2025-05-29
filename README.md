@@ -1,99 +1,161 @@
-## Simple Wiki (MongoDB with Authentication)
-A basic wiki website built with HTML, CSS, and vanilla JavaScript for the frontend, and a Node.js/Express backend. Wiki content, user information, and session data are stored in MongoDB.
-Features
-Hierarchical Wiki Structure: Organize wiki pages (Chapters) under Subjects (Folders).
-Markdown Support: Pages are written in Markdown, rendered client-side using marked.js.
-MongoDB Backend: All data (wiki items, users, sessions) is persisted in a MongoDB database.
-User Authentication: Secure login system using express-session and bcryptjs for password hashing.
-Role-Based Access Control:
-Admin: Full control over wiki content (create, edit, delete Subjects/Chapters), user management (add, edit, delete, enable/disable users, reset passwords).
-Student: Read-only access to wiki content. Can navigate Subjects and read Chapters.
-User Management Interface: Admins have a dedicated page to manage users.
-Drag & Drop: Admins can re-organize items in the sidebar using drag and drop.
-Dynamic UI: Sidebar and content actions are dynamically shown/hidden based on user role.
-How it Works
-Client-Server: The frontend (HTML, CSS, JS in the public/ folder) communicates with a Node.js/Express backend.
-Backend (server.js):
-Serves static frontend files (index.html, login.html, users.html, CSS, client-side JS).
-Handles user authentication (login, logout, session management).
-Provides API endpoints for:
-Managing wiki items (listing, creating, fetching content, saving, deleting, renaming/moving) - protected by authentication and admin roles for write operations.
-Managing users (listing, creating, updating, deleting, resetting passwords) - protected by admin roles.
-Database (MongoDB):
-wikiItems collection: Stores wiki pages (Chapters) and folders (Subjects). Each document includes:
-path: Unique identifier for the item (e.g., subject1/chapter1.md).
-name: The filename or folder name (e.g., chapter1.md, subject1).
-title: User-friendly title for display.
-description: Optional description.
-content: Markdown content for pages (files).
-type: 'file' or 'directory'.
-parentPath: Path of the parent item ('.' for root items).
-createdAt, updatedAt: Timestamps.
-users collection: Stores user credentials and roles.
-username: Unique username.
-password: Hashed password (using bcryptjs).
-role: 'admin' or 'student'.
-enabled: Boolean indicating if the account is active.
-createdAt: Timestamp.
-sessions collection: Stores active user sessions (managed by connect-mongo).
-Markdown Content: Unlike a file-based system, the Markdown content for wiki pages is now stored directly within the content field of documents in the wikiItems collection in MongoDB.
-Project Structure
+# Simple Wiki (MongoDB with Authentication)
+
+A dynamic and secure wiki application featuring a Node.js/Express backend and a vanilla JavaScript frontend. All wiki content, user credentials, and session information are robustly stored and managed within a MongoDB database.
+
+## Key Features
+
+*   **Hierarchical Content Organization:** Structure information intuitively with "Subjects" (acting as folders) containing multiple "Chapters" (wiki pages).
+*   **Markdown-Powered Content:** Authors create and edit Chapters using Markdown, which is rendered on the client-side using the `marked.js` library for a rich reading experience.
+*   **MongoDB Data Persistence:**
+    *   Wiki items (Subjects and Chapters) are stored in a dedicated MongoDB collection.
+    *   User accounts and their associated roles are managed in a separate users collection.
+    *   User sessions are persisted in MongoDB for enhanced reliability and scalability, facilitated by `connect-mongo`.
+*   **Secure User Authentication:**
+    *   Robust login system implemented with `express-session`.
+    *   Passwords are securely hashed using `bcryptjs` before database storage.
+*   **Role-Based Access Control (RBAC):**
+    *   **Admin Role:** Possesses full administrative privileges, including:
+        *   Complete CRUD (Create, Read, Update, Delete) operations on all Subjects and Chapters.
+        *   Ability to move and reorder wiki items via drag-and-drop in the sidebar.
+        *   Comprehensive user management capabilities through a dedicated admin interface.
+    *   **Student Role:** Granted read-only access to the wiki. Students can:
+        *   Navigate through the Subject/Chapter hierarchy.
+        *   View and read Chapter content.
+        *   Cannot modify any wiki content or user data.
+*   **Dedicated User Management Interface:**
+    *   Admins can access a `/admin/users` page to:
+        *   View all registered users.
+        *   Add new users (assigning username, password, and role).
+        *   Edit existing users (modify role and enabled/disabled status).
+        *   Reset user passwords.
+        *   Delete users (with safeguards for the primary admin account).
+*   **Interactive Sidebar Navigation:**
+    *   Displays a tree-like structure of Subjects and Chapters.
+    *   Subjects can be expanded/collapsed to show or hide their Chapters.
+    *   Context-sensitive action menus (via a "three-dots" icon) provide admins with quick access to manage items.
+    *   Visual cues for selected items and hover states.
+    *   Tooltip display for full item names if truncated by sidebar width.
+*   **Dynamic UI based on User Role:**
+    *   Administrative controls (e.g., "Edit Page" button, item action menus, root creation buttons, "Manage Users" link) are dynamically shown or hidden based on the logged-in user's role.
+*   **Non-Blocking Notifications:** Success and error messages are displayed in a temporary notification bar in the header, providing feedback without interrupting user flow with alert dialogs.
+
+## How it Works
+
+*   **Client-Server Architecture:** The application follows a standard client-server model. The frontend, built with HTML, CSS, and vanilla JavaScript, resides in the `public/` directory and interacts with the backend via API calls.
+*   **Backend (`server.js`):**
+    *   Built with Node.js and the Express.js framework.
+    *   Serves all static frontend assets (`index.html` for the main wiki, `login.html` for authentication, `users.html` for admin user management, along with their respective CSS and client-side JavaScript files).
+    *   Manages user authentication, including login, logout, and session persistence using `express-session` and `connect-mongo`.
+    *   Provides a RESTful API for:
+        *   **Authentication:** `/api/auth/login`, `/api/auth/logout`, `/api/auth/status`.
+        *   **Wiki Content Management:** Endpoints for listing all items (`/api/pages`), fetching specific page content (`/api/page/:filepath`), creating/updating pages (`/api/save`), creating directories (`/api/directory`), deleting items (`/api/item/:filepath`), and renaming/moving items (`/api/rename`). These are protected by authentication, with write operations restricted to admins.
+        *   **User Management:** Endpoints for listing users (`/api/users`), creating users (`/api/users`), updating user details (`/api/users/:userId`), resetting passwords (`/api/users/:userId/reset-password`), and deleting users (`/api/users/:userId`). These are exclusively accessible to admin users.
+*   **Database (MongoDB):**
+    *   **`wikiItems` Collection:** This collection stores the actual wiki content. Each document represents either a "Subject" (directory) or a "Chapter" (file/page) and includes fields such as:
+        *   `path`: A unique, slash-separated string identifying the item's location in the hierarchy (e.g., `introduction/getting-started.md`).
+        *   `name`: The generated filename or folder name part of the path (e.g., `getting-started.md`).
+        *   `title`: The human-readable title displayed in the UI.
+        *   `description` (optional): A brief summary of the item.
+        *   `content` (for Chapters): The Markdown source of the page.
+        *   `type`: Either 'file' (for Chapters) or 'directory' (for Subjects).
+        *   `parentPath`: The `path` of the parent Subject, or `.` for root-level items.
+        *   `createdAt`, `updatedAt`: Timestamps for record creation and last modification.
+    *   **`users` Collection:** This collection manages user accounts. Each document contains:
+        *   `username`: The unique login identifier for the user.
+        *   `password`: The user's password, securely hashed using `bcryptjs`.
+        *   `role`: A string indicating the user's role ('admin' or 'student').
+        *   `enabled`: A boolean flag to activate or deactivate the user account.
+        *   `createdAt`: Timestamp of user account creation.
+    *   **`sessions` Collection:** Automatically managed by `connect-mongo` to store active user session data, enabling persistence across server restarts.
+*   **Markdown Storage & Rendering:** The Markdown content for each Chapter is stored directly as a string within the `content` field of its corresponding document in the `wikiItems` MongoDB collection. Client-side JavaScript fetches this content and uses the `marked.js` library to parse and render it as HTML for display.
+
+## Project Structure
+
 simple-wiki-server/
-├── public/                   # Frontend static assets
-│   ├── images/
-│   │   └── Redhat_logo.png
-│   ├── index.html            # Main wiki SPA
-│   ├── login.html            # Login page
-│   ├── users.html            # User management page (for admins)
-│   ├── style.css             # Main CSS for index.html
-│   ├── login-style.css       # CSS for login.html
-│   ├── users-style.css       # CSS for users.html
-│   ├── script.js             # JavaScript for index.html
-│   └── users-script.js       # JavaScript for users.html
-│   └── login-script.js       # JavaScript for login.html
-├── server.js                 # Node.js/Express backend server
-├── package.json
-├── package-lock.json
-└── README.md
-Use code with caution.
-Prerequisites & Setup
-Node.js and npm: Ensure Node.js (which includes npm) is installed on your system.
-MongoDB:
-Install MongoDB and ensure it is running.
-The application connects to mongodb://localhost:27017 and uses a database named simpleWikiDB by default. You can change this via the MONGODB_URI environment variable.
-Clone the repository (if applicable).
-Install Dependencies:
-npm install
-Use code with caution.
-Bash
-Environment Variables (Recommended for Production):
-MONGODB_URI: (Optional) Your MongoDB connection string if not using the default.
-SESSION_SECRET: Crucial for production. Set this to a long, random, and unique string to secure user sessions. The application will warn you if you use the default secret in a production environment.
-# Example for .env file (use a package like dotenv or set directly in your environment)
-# MONGODB_URI=mongodb://user:pass@host:port/yourDbName
-# SESSION_SECRET=a_very_long_random_and_secure_string_here
-Use code with caution.
-Bash
-Running the Application
-Development Mode (with nodemon for auto-restarts):
-npm run dev
-Use code with caution.
-Bash
-Production Mode:
-npm start
-Use code with caution.
-Bash
-The server will typically start on http://localhost:3000.
-Default Admin User
-On the first run, if no 'admin' user exists, a default admin account will be created with the following credentials:
-Username: admin
-Password: admin
-It is highly recommended to log in and change this password immediately, especially in a shared or production environment.
-User Roles
-Admin: Can perform all actions:
-Create, edit, delete, move Subjects (folders) and Chapters (files).
-Manage users: add new users, edit existing users (role, enabled status), reset user passwords, delete users.
-Student: Can only read wiki content:
-View the list of Subjects and Chapters.
-Open and read Chapters.
-Cannot make any modifications to content or users.
+├── public/ # Contains all client-side static assets</br>
+│ ├── images/</br>
+│ │ └── Redhat_logo.png # Logo image</br>
+│ ├── index.html # Main Single Page Application (SPA) for the wiki</br>
+│ ├── login.html # User login page</br>
+│ ├── users.html # User management interface (for admins)</br>
+│ ├── style.css # Global styles and styles for index.html</br>
+│ ├── login-style.css # Specific styles for login.html</br>
+│ ├── users-style.css # Specific styles for users.html</br>
+│ ├── script.js # Client-side JavaScript for index.html (main wiki logic)</br>
+│ ├── users-script.js # Client-side JavaScript for users.html (user management logic)</br>
+│ └── login-script.js # Client-side JavaScript for login.html (login form handling)</br>
+├── server.js # The core Node.js/Express backend application</br>
+├── package.json # Project metadata and dependencies</br>
+├── package-lock.json # Exact versions of installed dependencies</br>
+└── README.md # This file</br>
+
+## Prerequisites & Setup
+
+To run this project locally, you will need:
+
+1.  **Node.js and npm:** Install the latest LTS version of Node.js from [nodejs.org](https://nodejs.org/), which includes npm (Node Package Manager).
+2.  **MongoDB:**
+    *   Install MongoDB Community Server from [mongodb.com](https://www.mongodb.com/try/download/community).
+    *   Ensure your MongoDB instance is running (typically `mongod` service).
+    *   The application defaults to connecting to `mongodb://localhost:27017` and uses a database named `simpleWikiDB`. This can be configured via the `MONGODB_URI` environment variable.
+3.  **Clone the Repository (Optional):** If you have the project files from a Git repository:
+    ```bash
+    git clone <repository-url>
+    cd simple-wiki-server
+    ```
+4.  **Install Project Dependencies:** Navigate to the project's root directory in your terminal and run:
+    ```bash
+    npm install
+    ```
+    This will install all necessary packages defined in `package.json` (Express, MongoDB driver, session management, bcrypt, etc.).
+5.  **Environment Variables (Highly Recommended, Especially for Production):**
+    Create a `.env` file in the root of the project (and ensure it's in your `.gitignore`) or set these variables directly in your deployment environment:
+    *   `MONGODB_URI`: (Optional) Your full MongoDB connection string if it's different from the default (e.g., includes authentication or a remote host). Example: `MONGODB_URI=mongodb://user:password@yourhost:27017/yourdbname`
+    *   `SESSION_SECRET`: **This is critical for security.** Replace the default placeholder in `server.js` with a long, complex, and random string. This secret is used to sign session ID cookies.
+    ```
+    # Example .env file content:
+    MONGODB_URI=mongodb://localhost:27017/simpleWikiDB
+    SESSION_SECRET=replace_this_with_a_very_long_and_random_secure_string_for_production
+    ```
+    If using a `.env` file, you might need a package like `dotenv` (`npm install dotenv`) and require it at the top of `server.js`: `require('dotenv').config();`.
+
+## Running the Application
+
+*   **For Development (recommended):** Uses `nodemon` to automatically restart the server when file changes are detected.
+    ```bash
+    npm run dev
+    ```
+*   **For Production:**
+    ```bash
+    npm start
+    ```
+
+Once started, the application will be accessible at `http://localhost:3000`.
+
+## Default Administrator Account
+
+Upon its first successful startup and connection to MongoDB, the application will automatically create a default administrator account if one doesn't already exist:
+*   **Username:** `admin`
+*   **Password:** `admin`
+
+**Security Note:** It is imperative to log in with these default credentials immediately and then use the user management interface (`/admin/users`) to change this default password to something strong and unique.
+
+## User Roles and Permissions
+
+*   **Admin:**
+    *   Can view all wiki content.
+    *   Can create new Subjects (folders) and Chapters (pages).
+    *   Can edit the title, description, and Markdown content of existing Chapters.
+    *   Can edit the title and description of Subjects.
+    *   Can move Subjects and Chapters within the hierarchy (including via drag-and-drop).
+    *   Can delete Subjects (which also deletes all nested content) and Chapters.
+    *   Can access the User Management page (`/admin/users`).
+    *   Can create new users (admin or student).
+    *   Can edit existing users (change role, enable/disable account).
+    *   Can reset passwords for other users.
+    *   Can delete users (with a safeguard against deleting the last active admin).
+*   **Student:**
+    *   Can view all wiki content (Subjects and Chapters).
+    *   Can navigate the wiki structure.
+    *   Cannot create, edit, delete, or move any wiki content.
+    *   Cannot access the User Management page or perform any user administration tasks.
