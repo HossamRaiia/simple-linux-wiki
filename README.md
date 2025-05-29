@@ -1,6 +1,6 @@
 # Simple Wiki (Server-Side Saving)
 
-A basic wiki website built with HTML, CSS, and vanilla JavaScript for the frontend, and a Node.js/Express backend for file management. Wiki pages are stored as `.md` (Markdown) files in the `wikis/` folder on the server.
+A basic wiki website built with HTML, CSS, and vanilla JavaScript for the frontend, and a Node.js/Express backend for file management. Wiki pages are stored as `.md` (Markdown) files in the `MongoDB container` folder on the server.
 
 ## How it Works
 
